@@ -97,4 +97,9 @@
 	module.exports = connectDb;
 	```
 - [ ] lets try to sign up user by the help of `postman`
+> Now Make MVC Pattenr
 ---
+----
+# Class - 3: [Login User & Auth Middleware](https://www.youtube.com/watch?v=F6QGbKpAadU&list=PLFcwiScIb5d9aGKb-_F8nBfjGs9WQzWxV&index=3)
+
+###### Tasks
