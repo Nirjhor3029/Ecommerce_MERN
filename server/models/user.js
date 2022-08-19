@@ -29,14 +29,19 @@ const UserSchema = new mongoose.Schema({
 }); 
 
 const userRegValidation = [
-    //validation
+    //Register-validation
     check('name', 'Name is required').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
     check('password', 'Please enter a password with 6 or more characters').isLength({
         min: 6
     }),
 ];
+const userLoginValidation = [
+    //Login-validation
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'password is required').exists(),
+];
 
 const User = mongoose.model('User',UserSchema);
 
-module.exports = {User,userRegValidation};
+module.exports = {User,userRegValidation,userLoginValidation};

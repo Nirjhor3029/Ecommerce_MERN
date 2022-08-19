@@ -97,9 +97,23 @@
 	module.exports = connectDb;
 	```
 - [ ] lets try to sign up user by the help of `postman`
-> Now Make MVC Pattenr
+> `Now Make` MVC *Pattern*
 ---
 ----
 # Class - 3: [Login User & Auth Middleware](https://www.youtube.com/watch?v=F6QGbKpAadU&list=PLFcwiScIb5d9aGKb-_F8nBfjGs9WQzWxV&index=3)
 
 ###### Tasks
+- [ ] Login User
+	- [x] `check()` user request  data validation
+	- [ ] get email & password from `req.body`
+	- [ ] `findOne()` from database > `user collection`
+	- [ ] match/compare password by `bcryptjs`
+	- [ ] JWT Token:
+		- [ ] create payload by `user.id`
+		- [ ] `jwt.sign()` & get the token by `payload`
+	- [ ] login by `postman` URL: `/api/user/login`
+- [ ] Make middleware if user Login or not
+	- [ ] create: `middleware > auth.js`
+		- [ ] Token Check if token has 
+		- [ ] Verify Token
+	- [ ] get user information from token

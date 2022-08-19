@@ -8,8 +8,10 @@ const { validationResult } = require('express-validator');
 const gravatar = require('gravatar');
 
 //Models
-const {User} = require('../models/user')
+const { User } = require('../models/user');
+const { serverError } = require('../helpers/helper');
 
+const expiresIn = (process.env.NODE_ENV == "development")? 360000 : 3600; // in production it will 3600
 
 // @route   POST api/user/register
 // @desc    Register User 
@@ -68,9 +70,7 @@ const register_post = async (req, res) => {
             }
         }
 
-        jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: 360000, //for production it will 3600
-        }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET, {expiresIn:expiresIn}, (err, token) => {
             if (err) throw err;
             res.json({ token });
         });
@@ -81,4 +81,74 @@ const register_post = async (req, res) => {
     }
 }
 
-module.exports = {register_post}
+// @route   POST api/user/login
+// @desc    Login User 
+// @access  Public
+const login_post = async (req, res) => {
+    const validationErrs = validationResult(req);
+    
+    //if any validation error
+    if (!validationErrs.isEmpty()) {
+        return res.status(400).json({
+            errors: validationErrs.array()
+        });
+    }
+    
+
+    //get user data from request
+    const { email, password } = req.body;
+
+    //find user from database
+    try {
+        let user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({
+                errors: [{
+                    msg: 'Invalid Credentials'
+                }]
+            });
+        }
+
+        //know user founded by email let's compare the password
+        // console.log(password);
+        const isMatch = await bcrypt.compare(password,user.password);
+        
+        // if password don't match
+        if(!isMatch){
+            return res.status(400).json({
+                errors: [{
+                    msg: 'Invalid Credentials'
+                }]
+            });
+        }
+
+        const payload = {
+            user: {
+                id: user.id
+            }
+        }
+
+        jwt.sign(payload, process.env.JWT_SECRET,{expiresIn:expiresIn},(err,token)=>{
+            if(err) throw err;
+            return res.json({ token});
+        })
+        console.log(payload);
+        // return res.json({payload});
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).send('Server Error');
+    }
+}
+
+const getUser_get = async (req, res) => {
+    try {
+        //get user information
+        const user = await User.findById(req.user.id);
+        res.json(user);
+    } catch (error) {
+        serverError(res,error,'Server error');
+    }
+}
+
+
+module.exports = { register_post, login_post, getUser_get }
